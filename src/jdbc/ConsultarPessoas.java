@@ -1,18 +1,20 @@
 package jdbc;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConsultarPessoas {
 	public static void main(String[] args) throws SQLException {
 		Connection conexao = FabricaConexao.getConnection();
-		String sql = "SELECT * FROM pessoas";
-		Statement stmt = conexao.createStatement();
-		ResultSet resultado = stmt.executeQuery(sql);
+		String sql = "SELECT * FROM pessoas WHERE nome ILIKE ?";
+
+		PreparedStatement ps = conexao.prepareStatement(sql);
+		ps.setString(1, "%Isabel%");
+		ResultSet resultado = ps.executeQuery();
 		
 		List<Pessoa> pessoas = new ArrayList<>();
 
@@ -24,10 +26,11 @@ public class ConsultarPessoas {
 		}
 		
 		for(Pessoa p: pessoas) {
+			System.out.println(p.getCodigo());
 			System.out.println(p.getNome());
 		}
 
-		stmt.close();
+		ps.close();
 		conexao.close();
 	}
 }
